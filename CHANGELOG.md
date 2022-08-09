@@ -2,6 +2,7 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2022-08-09)
 ## v0.5.0 (2022-08-08)
 ### Feature
 * Use custom telethon fork with updated layer ([`91894fc`](https://github.com/tm-a-t/TGPy/commit/91894fc6894e5e111baa469c3de372b46e62b049)) ([`9c7738e`](https://github.com/tm-a-t/TGPy/commit/9c7738e40cda69499974ceda711f56ca65782312))
