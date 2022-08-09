@@ -51,7 +51,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           BRANCH_TAG=$DOCKERHUB_REPO:latest
-          VERSION_TAG=v$(cat tgpy/version.py| grep __version__ | sed "s/^__version__ = '\(.*\)'$/\1/")
+          VERSION_TAG=$DOCKERHUB_REPO:v$(cat tgpy/version.py| grep __version__ | sed "s/^__version__ = '\(.*\)'$/\1/")
           echo "IMAGE_TAGS=-t $BRANCH_TAG -t $VERSION_TAG" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
