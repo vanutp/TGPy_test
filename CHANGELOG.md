@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2022-08-09)
+### Fix
+* Compatibility with python 3.9 ([`c8feb01`](https://github.com/vanutp/TGPy_test/commit/c8feb0168ea1fb36e044dcc31fb9ca23d4ed50a8))
+
 ## v0.5.0 (2022-08-08)
 ### Feature
 * Use custom telethon fork with updated layer ([`91894fc`](https://github.com/tm-a-t/TGPy/commit/91894fc6894e5e111baa469c3de372b46e62b049)) ([`9c7738e`](https://github.com/tm-a-t/TGPy/commit/9c7738e40cda69499974ceda711f56ca65782312))
