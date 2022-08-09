@@ -26,6 +26,7 @@ build_command = """sed -i "s/\\(IS_DEV_BUILD *= *\\).*/\\1False/" tgpy/version.p
 commit_subject = 'chore(release): v{version} [skip ci]'
 commit_message = ''
 
+
 [tool.black]
 skip-string-normalization = true
 include = '/tgpy/.*\.pyi?$'
