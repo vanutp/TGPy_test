@@ -99,7 +99,7 @@ jobs:
           export GH_TOKEN="${GITHUB_TOKEN}"
           export REPOSITORY_USERNAME="__token__"
           export REPOSITORY_PASSWORD="${PYPI_TOKEN}"
-          python -m semantic_release publish -D commit_author="github-actions <action@github.com>"
+          python -m semantic_release publish -D commit_author="github-actions <action@github.com>" -D repository=testpypi
 
       - name: Save release commit hash
         id: release-commit-hash
