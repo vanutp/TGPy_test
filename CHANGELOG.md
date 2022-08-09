@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.3 (2022-08-09)
+### Fix
+* Cum ([`dc49451`](https://github.com/vanutp/TGPy_test/commit/dc4945126cb2a5524552e5ef19edda949c4f488e))
+
 ## v0.5.2 (2022-08-09)
 
 
