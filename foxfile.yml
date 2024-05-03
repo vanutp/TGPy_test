@@ -1,3 +1,4 @@
 use_flake: true
-script:
-  - mkdocs build
+script: |
+  cd guide
+  mkdocs build
