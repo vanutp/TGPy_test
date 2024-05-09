@@ -22,7 +22,7 @@ stages:
   Build container image:
     image: quay.io/podman/stable
     run: |
-      podman build -t test .
+      podman build -t test --platform linux/amd64,linux/arm64 -v /nix/store:/nix/store:ro .
       
 
 workflows:
@@ -32,4 +32,4 @@ workflows:
       - Build guide
       - Lint
       # - Release
-      - Build container image
+      #      - Build container image
