@@ -1,4 +1,35 @@
 use_flake: true
-script: |
-  cd guide
-  mkdocs build
+
+stages:
+  Build guide:
+    run: |
+      cd guide
+      mkdocs build
+  Lint:
+    run: |
+      black --check --diff .
+      isort --check --diff .
+  # Release:
+  #   needs: Lint
+  #   run: |
+  #     git config --global user.name "github-actions"
+  #     git config --global user.email "action@github.com"
+  #     export GH_TOKEN="${GITHUB_TOKEN}"
+  #     export REPOSITORY_USERNAME="__token__"
+  #     export REPOSITORY_PASSWORD="${PYPI_TOKEN}"
+  #     semantic_release publish -D commit_author="github-actions <action@github.com>"
+  #     echo "::set-env RELEASE_COMMIT_HASH=$(git rev-parse HEAD)"
+  Build container image:
+    image: quay.io/podman/stable
+    run: |
+      podman build -t test .
+      
+
+workflows:
+  CI:
+    if: $FOXBUILD_ENV != 'local'
+    stages:
+      - Build guide
+      - Lint
+      # - Release
+      - Build container image

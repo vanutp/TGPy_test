@@ -54,6 +54,7 @@
 
         devShells.default = pkgs.mkShell {
           inputsFrom = [ (buildTgpy pkgs true) ];
+	  nativeBuildInputs = [ pkgs.git ];
           packages = [ pkgs.poetry ];
         };
       }
