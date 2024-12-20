@@ -86,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          alias prun='nix develop -c poetry run'
+          function prun() { nix develop -c poetry run "$@" }
           
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
