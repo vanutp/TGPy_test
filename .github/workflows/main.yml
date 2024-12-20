@@ -87,6 +87,7 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           source .venv/bin/activate
+          pip freeze
           
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
