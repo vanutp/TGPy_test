@@ -87,7 +87,7 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           function prun() { nix develop -c poetry run "$@" }
-          
+
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
           prun semantic_release version
