@@ -87,12 +87,17 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           source .venv/bin/activate
+          
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          export GH_TOKEN="${GITHUB_TOKEN}"
-          export REPOSITORY_USERNAME="__token__"
-          export REPOSITORY_PASSWORD="${PYPI_TOKEN}"
           python -m semantic_release publish -D commit_author="github-actions <action@github.com>"
+
+          export TWINE_USERNAME="__token__"
+          export TWINE_PASSWORD="${PYPI_TOKEN}"
+          python -m twine upload -r testpypi dist/*
+
+          export GH_TOKEN="${GITHUB_TOKEN}"
+          python -m semantic_release publish
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
