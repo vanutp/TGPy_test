@@ -87,19 +87,19 @@ jobs:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           function prun() {
-            nix develop -c poetry run "$@"
+            nix develop -c poetry run python -m "$@"
           }
 
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          prun python -m semantic_release version
+          prun semantic_release version
 
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${PYPI_TOKEN}"
           prun twine upload -r testpypi dist/*
 
           export GH_TOKEN="${GITHUB_TOKEN}"
-          prun python -m semantic_release publish
+          prun semantic_release publish
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
