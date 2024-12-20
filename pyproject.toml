@@ -3,7 +3,7 @@ name = "tgpy"
 version = "0.16.0"
 description = "Run Python code right in your Telegram messages"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<4"
 license = { file = "LICENSE" }
 classifiers = [
     "Operating System :: OS Independent",
@@ -26,7 +26,6 @@ dependencies = [
 ]
 
 [dependency-groups]
-release = ["python-semantic-release~=7.31.2"]
 dev = ["black~=22.6.0", "isort~=5.10.1"]
 guide = [
     "mkdocs-material~=9.5.18",
@@ -59,6 +58,9 @@ include = '/tgpy/.*\.pyi?$'
 [tool.isort]
 profile = "black"
 src_paths = ["tgpy"]
+
+[tool.poetry.group.release.dependencies]
+python-semantic-release = "^9.15.2"
 
 [build-system]
 requires = ["flit-core>=3.4,<4"]

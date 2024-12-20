@@ -37,9 +37,11 @@
             tgpy = python.pkgs.buildPythonPackage (
               packageAttrs
               // {
-                license = pkgs.lib.licenses.mit;
-                homepage = "https://tgpy.tmat.me/";
-                pythonImportsCheck = [ "tgpy" ];
+                meta = {
+                  license = pkgs.lib.licenses.mit;
+                  homepage = "https://tgpy.tmat.me/";
+                  pythonImportsCheck = [ "tgpy" ];
+                };
               }
             );
             default = config.packages.tgpy;

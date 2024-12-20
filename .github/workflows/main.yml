@@ -2,18 +2,18 @@ name: Lint & release project
 on:
   push:
     paths:
-      - 'pyproject.toml'
-      - 'poetry.lock'
-      - 'tgpy/**'
-      - '.github/workflows/main.yml'
-      - '.github/workflows/docker.yml'
+      - "pyproject.toml"
+      - "poetry.lock"
+      - "tgpy/**"
+      - ".github/workflows/main.yml"
+      - ".github/workflows/docker.yml"
   pull_request:
     paths:
-      - 'pyproject.toml'
-      - 'poetry.lock'
-      - 'tgpy/**'
-      - '.github/workflows/main.yml'
-      - '.github/workflows/docker.yml'
+      - "pyproject.toml"
+      - "poetry.lock"
+      - "tgpy/**"
+      - ".github/workflows/main.yml"
+      - ".github/workflows/docker.yml"
   workflow_dispatch: {}
 
 jobs:
@@ -25,7 +25,9 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Install dependencies
-        run: nix develop -c poetry install
+        run: |
+          nix develop -c poetry config virtualenvs.in-project true
+          nix develop -c poetry install
 
       - name: Check code style
         if: github.event_name != 'push'
@@ -68,7 +70,9 @@ jobs:
           path: .venv
           key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
       - name: Install dependencies
-        run: nix develop -c poetry install
+        run: |
+          nix develop -c poetry config virtualenvs.in-project true
+          nix develop -c poetry install --with release
         if: steps.load-cache.outputs.cache-hit != 'true'
 
       - name: Release
