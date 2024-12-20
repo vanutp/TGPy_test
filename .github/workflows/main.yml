@@ -60,7 +60,6 @@ jobs:
 
   Release:
     concurrency: release
-    needs: Lint
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
