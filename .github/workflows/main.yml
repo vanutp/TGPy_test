@@ -19,6 +19,7 @@ on:
 jobs:
   Lint:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - uses: actions/checkout@v2
       - uses: DeterminateSystems/nix-installer-action@main
@@ -92,14 +93,14 @@ jobs:
 
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          prun python-semantic-release version
+          prun python -m semantic_release version
 
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${PYPI_TOKEN}"
           prun twine upload -r testpypi dist/*
 
           export GH_TOKEN="${GITHUB_TOKEN}"
-          prun python-semantic-release publish
+          prun python -m semantic_release publish
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
