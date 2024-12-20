@@ -86,6 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
+          nix develop -c echo
           source .venv/bin/activate
           pip freeze
           
