@@ -88,7 +88,6 @@ jobs:
         run: |
           nix develop -c echo
           source .venv/bin/activate
-          pip freeze
           
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
@@ -99,7 +98,7 @@ jobs:
           python -m twine upload -r testpypi dist/*
 
           export GH_TOKEN="${GITHUB_TOKEN}"
-          python -m semantic_release publish
+          nix develop -c python -m semantic_release publish
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
