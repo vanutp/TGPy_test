@@ -21,4 +21,5 @@ self: super: {
       hash = "sha256-AqSVFOB9Lfvk9h3GtoYlEOXBEt7YZYLhCDNKM9upQ2U=";
     };
   });
+  python-semantic-release = pkgs.callPackage ./python-semantic-release.nix { };
 }

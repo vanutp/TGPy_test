@@ -46,7 +46,15 @@
 
           devShells.default =
             let
-              pythonEnv = python.withPackages (project.renderers.withPackages { inherit python; });
+              pythonEnv = python.withPackages (
+                project.renderers.withPackages {
+                  inherit python;
+                  groups = [
+                    "dev"
+                    "guide"
+                  ];
+                }
+              );
             in
             pkgs.mkShell {
               packages = [

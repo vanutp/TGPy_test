@@ -25,7 +25,7 @@ dependencies = [
     "cryptg-anyos~=0.4.1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["python-semantic-release~=7.31.2", "black~=22.6.0", "isort~=5.10.1"]
 guide = [
     "mkdocs-material~=9.5.18",
