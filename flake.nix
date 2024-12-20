@@ -47,7 +47,7 @@
 
           devShells.default = pkgs.mkShell {
             packages = [
-              pkgs.poetry
+              (pkgs.callPackage ./nix/poetry-master.nix { })
               python-semantic-release
               (python.withPackages (
                 project.renderers.withPackages {

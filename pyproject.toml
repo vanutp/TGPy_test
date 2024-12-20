@@ -60,7 +60,6 @@ include = '/tgpy/.*\.pyi?$'
 profile = "black"
 src_paths = ["tgpy"]
 
-
 [build-system]
 requires = ["flit-core>=3.4,<4"]
 build-backend = "flit_core.buildapi"
