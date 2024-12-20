@@ -36,14 +36,9 @@
             tgpy = python.pkgs.buildPythonPackage (
               packageAttrs
               // {
-                meta = with pkgs.lib; {
-                  description = "Run Python code right in your Telegram messages";
-                  homepage = "https://tgpy.tmat.me/";
-                  license = licenses.mit;
-                  mainProgram = "tgpy";
-                  platforms = platforms.all;
-                  pythonImportsCheck = [ "tgpy" ];
-                };
+                license = pkgs.lib.licenses.mit;
+                homepage = "https://tgpy.tmat.me/";
+                pythonImportsCheck = [ "tgpy" ];
               }
             );
             default = config.packages.tgpy;
