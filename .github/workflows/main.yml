@@ -91,14 +91,14 @@ jobs:
           
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          python -m semantic_release version
+          nix develop -c python -m semantic_release version
 
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${PYPI_TOKEN}"
           python -m twine upload -r testpypi dist/*
 
           export GH_TOKEN="${GITHUB_TOKEN}"
-          nix develop -c python -m semantic_release publish
+          python -m semantic_release publish
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
