@@ -30,7 +30,6 @@
             packageOverrides = import ./nix/mkPackageOverrides.nix { inherit pkgs; };
           };
           packageAttrs = project.renderers.buildPythonPackage { inherit python; };
-          python-semantic-release = pkgs.callPackage ./nix/python-semantic-release.nix { };
         in
         {
           packages = {
@@ -50,7 +49,6 @@
           devShells.default = pkgs.mkShell {
             packages = [
               (pkgs.callPackage ./nix/poetry-master.nix { })
-              python-semantic-release
               (python.withPackages (
                 project.renderers.withPackages {
                   inherit python;
