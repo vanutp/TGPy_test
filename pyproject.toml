@@ -26,7 +26,8 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["python-semantic-release~=7.31.2", "black~=22.6.0", "isort~=5.10.1"]
+release = ["python-semantic-release~=7.31.2"]
+dev = ["black~=22.6.0", "isort~=5.10.1"]
 guide = [
     "mkdocs-material~=9.5.18",
     "mkdocs-git-revision-date-localized-plugin~=1.2.4",
@@ -58,6 +59,7 @@ include = '/tgpy/.*\.pyi?$'
 [tool.isort]
 profile = "black"
 src_paths = ["tgpy"]
+
 
 [build-system]
 requires = ["flit-core>=3.4,<4"]
