@@ -92,7 +92,7 @@ jobs:
           
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          python -m semantic_release publish -D commit_author="github-actions <action@github.com>"
+          python -m semantic_release version
 
           export TWINE_USERNAME="__token__"
           export TWINE_PASSWORD="${PYPI_TOKEN}"
