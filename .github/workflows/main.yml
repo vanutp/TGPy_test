@@ -63,7 +63,7 @@ jobs:
           GH_TAG: ${{ steps.release-version.outputs.version-tag }}
         run: |
           source .venv/bin/activate
-          python -m semantic_release semantic-release -v publish --tag $GH_TAG
+          python -m semantic_release -v publish --tag $GH_TAG
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
