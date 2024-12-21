@@ -55,7 +55,8 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
           export GH_TOKEN="${GITHUB_TOKEN}"
-          echo "version=$(python -m semantic_release version --no-vcs-release)" >> $GITHUB_OUTPUT
+          python -m semantic_release version --no-vcs-release
+          echo "version-tag=$(python -m semantic_release version --print-tag)" >> $GITHUB_OUTPUT
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
@@ -69,7 +70,7 @@ jobs:
 
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
-      version: ${{ steps.release-version.outputs.version }}
+      version-tag: ${{ steps.release-version.outputs.version-tag }}
 
   pubilsh-release:
     name: Publish release
@@ -91,7 +92,7 @@ jobs:
       - name: Create a GitHub Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ needs.create-release.outputs.version }}
+          tag: ${{ needs.create-release.outputs.version-tag }}
 
       - name: Publish package distributions to GitHub Releases
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
