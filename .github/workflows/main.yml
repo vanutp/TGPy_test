@@ -19,7 +19,7 @@ on:
 jobs:
   release:
     concurrency: release
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
 
       - name: Load dependency cache
         id: load-cache
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: .venv
           key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
@@ -54,10 +54,36 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
           export GH_TOKEN="${GITHUB_TOKEN}"
-          python -m semantic_release version
+          export pyversion=$(python -m semantic_release version --no-vcs-release)
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Save release commit hash
+        id: release-commit-hash
+        run: echo "release-commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Save release version
+        id: release-version
+        run: echo "version=$pyversion" >> $GITHUB_OUTPUT
+    outputs:
+      release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
+
+  pubilsh-release:
+    needs: release
+    concurrency: release
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
         with:
           name: python-package-distributions
           path: dist/
@@ -66,12 +92,6 @@ jobs:
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Save release commit hash
-        id: release-commit-hash
-        run: echo "release-commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-    outputs:
-      release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
 
   # build-dev-docker:
   #   needs: lint
