@@ -17,8 +17,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  create-release:
-    name: Create release
+  release:
+    name: Release
     concurrency: release
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -75,6 +75,30 @@ jobs:
 
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
+
+  publish-to-testpypi:
+    name: Publish Python distribution to TestPyPI
+    needs:
+      - release
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/tgpy
+
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Download all the dists
+        uses: actions/download-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+      - name: Publish distribution to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
   # build-dev-docker:
   #   needs: lint
