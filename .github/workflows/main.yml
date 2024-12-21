@@ -17,7 +17,8 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  release:
+  create-release:
+    name: Create release
     concurrency: release
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
@@ -45,8 +46,7 @@ jobs:
           poetry install --with release
         if: steps.load-cache.outputs.cache-hit != 'true'
 
-      - name: release
-        shell: bash
+      - name: Create a release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -69,11 +69,14 @@ jobs:
       - name: Save release version
         id: release-version
         run: echo "version=$pyversion" >> $GITHUB_OUTPUT
+
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
+      version: ${{ steps.release-version.outputs.version }}
 
   pubilsh-release:
-    needs: release
+    name: Publish release
+    needs: create-release
     concurrency: release
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
@@ -88,10 +91,16 @@ jobs:
           name: python-package-distributions
           path: dist/
 
+      - name: Create a GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: v${{ needs.create-release.outputs.version }}
+
       - name: Publish package distributions to GitHub Releases
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: v${{ needs.create-release.outputs.version }}
 
   # build-dev-docker:
   #   needs: lint
