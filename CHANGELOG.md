@@ -1,6 +1,9 @@
 # CHANGELOG
 
 
+## v0.6.0+v0.7.0 (2024-12-21)
+
+
 ## v0.6.0 (2024-12-21)
 
 ### Bug Fixes
@@ -173,6 +176,9 @@
 
 - **release**: V0.5.1 [skip ci]
   ([`9371260`](https://github.com/vanutp/TGPy_test/commit/937126086eea249bde5c2b881c3aeb3a97af31d7))
+
+- **release**: V0.6.0 [skip ci]
+  ([`0b59dcc`](https://github.com/vanutp/TGPy_test/commit/0b59dcc656ec496626b937b88dc857ce659798bb))
 
 - **release**: V0.6.0 [skip ci]
   ([`ffbc4bd`](https://github.com/vanutp/TGPy_test/commit/ffbc4bdd6f8abd6354952ac26cdff8d73a94ee8f))

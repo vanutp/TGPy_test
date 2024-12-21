@@ -17,65 +17,28 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-      - name: Load dependency cache
-        id: load-cache
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
-      - uses: nicknovitski/nix-develop@v1
-      - name: Install dependencies
-        run: |
-          poetry config virtualenvs.in-project true
-          poetry install
-        if: steps.load-cache.outputs.cache-hit != 'true'
-      - name: Check code style
-        if: github.event_name != 'push'
-        run: |
-          poetry run black --check --diff .
-          poetry run isort --check --diff .
-      - name: Reformat code
-        if: github.event_name == 'push'
-        run: |
-          poetry run black .
-          poetry run isort .
-      - name: Commit chanes
-        if: github.event_name == 'push'
-        shell: bash
-        run: |
-          if [ ! -n "$(git status --porcelain)" ]; then
-            exit
-          fi
-          git add -A
-          git config user.name "github-actions"
-          git config user.email "action@github.com"
-          git commit -m "style: reformat [skip ci]"
-          git push
-
   release:
     concurrency: release
-    needs: lint
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: DeterminateSystems/nix-installer-action@main
+
       - uses: DeterminateSystems/magic-nix-cache-action@main
+
       - name: Load dependency cache
         id: load-cache
         uses: actions/cache@v2
         with:
           path: .venv
           key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+
       - uses: nicknovitski/nix-develop@v1
+
       - name: Install dependencies
         run: |
           poetry config virtualenvs.in-project true
@@ -92,28 +55,36 @@ jobs:
           git config --global user.email "action@github.com"
           export GH_TOKEN="${GITHUB_TOKEN}"
           python -m semantic_release version
+
+      - name: Store the distribution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package-distributions
+          path: dist/
+
       - name: Publish package distributions to GitHub Releases
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Save release commit hash
         id: release-commit-hash
-        run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
+        run: echo "release-commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
 
-  build-dev-docker:
-    needs: lint
-    name: Build dev docker image
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref != 'refs/heads/master'
-    uses: ./.github/workflows/docker.yml
-    secrets: inherit
+  # build-dev-docker:
+  #   needs: lint
+  #   name: Build dev docker image
+  #   if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref != 'refs/heads/master'
+  #   uses: ./.github/workflows/docker.yml
+  #   secrets: inherit
 
-  build-release-docker:
-    name: Build release docker image
-    needs: release
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/docker.yml
-    with:
-      commit-hash: ${{ needs.release.outputs.release-commit-hash }}
-    secrets: inherit
+  # build-release-docker:
+  #   name: Build release docker image
+  #   needs: release
+  #   if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
+  #   uses: ./.github/workflows/docker.yml
+  #   with:
+  #     commit-hash: ${{ needs.release.outputs.release-commit-hash }}
+  #   secrets: inherit
