@@ -19,32 +19,32 @@ on:
 jobs:
   Lint:
     runs-on: ubuntu-latest
-    if: false
     steps:
       - uses: actions/checkout@v2
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Load dependency cache
         id: load-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: .venv
           key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+      - uses: nicknovitski/nix-develop@v1
       - name: Install dependencies
         run: |
-          nix develop -c poetry config virtualenvs.in-project true
-          nix develop -c poetry install
+          poetry config virtualenvs.in-project true
+          poetry install
         if: steps.load-cache.outputs.cache-hit != 'true'
       - name: Check code style
         if: github.event_name != 'push'
         run: |
-          nix develop -c poetry run black --check --diff .
-          nix develop -c poetry run isort --check --diff .
+          poetry run black --check --diff .
+          poetry run isort --check --diff .
       - name: Reformat code
         if: github.event_name == 'push'
         run: |
-          nix develop -c poetry run black .
-          nix develop -c poetry run isort .
+          poetry run black .
+          poetry run isort .
       - name: Commit chanes
         if: github.event_name == 'push'
         shell: bash
@@ -60,6 +60,7 @@ jobs:
 
   Release:
     concurrency: release
+    needs: Lint
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
@@ -70,36 +71,37 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Load dependency cache
         id: load-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v2
         with:
           path: .venv
           key: app-${{ runner.os }}-python-${{ env.pythonLocation }}-${{ hashFiles('poetry.lock') }}
+      - uses: nicknovitski/nix-develop@v1
       - name: Install dependencies
         run: |
-          nix develop -c poetry config virtualenvs.in-project true
-          nix develop -c poetry install --with release
+          poetry config virtualenvs.in-project true
+          poetry install --with release
         if: steps.load-cache.outputs.cache-hit != 'true'
 
-      - name: Release
+      - name: release
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
-          function prun() {
-            nix develop -c poetry run python -m "$@"
-          }
-
+          source .venv/bin/activate
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          prun semantic_release version
-
-          export TWINE_USERNAME="__token__"
-          export TWINE_PASSWORD="${PYPI_TOKEN}"
-          prun twine upload -r testpypi dist/*
-
           export GH_TOKEN="${GITHUB_TOKEN}"
-          prun semantic_release publish
+          python -m semantic_release version
+      - name: Publish distribution 📦 to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+        if: steps.release.outputs.released == 'true'
+      - name: Publish package distributions to GitHub Releases
+        uses: python-semantic-release/upload-to-gh-release@v8.7.0
+        if: steps.release.outputs.released == 'true'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "::set-output name=release-commit-hash::$(git rev-parse HEAD)"
