@@ -17,10 +17,10 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  Lint:
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v5
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: Load dependency cache
@@ -58,13 +58,13 @@ jobs:
           git commit -m "style: reformat [skip ci]"
           git push
 
-  Release:
+  release:
     concurrency: release
-    needs: Lint
+    needs: lint
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - uses: DeterminateSystems/nix-installer-action@main
@@ -92,14 +92,8 @@ jobs:
           git config --global user.email "action@github.com"
           export GH_TOKEN="${GITHUB_TOKEN}"
           python -m semantic_release version
-      - name: Publish distribution 📦 to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-        if: steps.release.outputs.released == 'true'
       - name: Publish package distributions to GitHub Releases
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
-        if: steps.release.outputs.released == 'true'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Save release commit hash
@@ -108,18 +102,18 @@ jobs:
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
 
-  Build-dev-docker:
-    needs: Lint
+  build-dev-docker:
+    needs: lint
     name: Build dev docker image
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref != 'refs/heads/master'
     uses: ./.github/workflows/docker.yml
     secrets: inherit
 
-  Build-release-docker:
+  build-release-docker:
     name: Build release docker image
-    needs: Release
+    needs: release
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     uses: ./.github/workflows/docker.yml
     with:
-      commit-hash: ${{ needs.Release.outputs.release-commit-hash }}
+      commit-hash: ${{ needs.release.outputs.release-commit-hash }}
     secrets: inherit
