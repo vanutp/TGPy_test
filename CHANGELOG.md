@@ -175,6 +175,9 @@
   ([`9371260`](https://github.com/vanutp/TGPy_test/commit/937126086eea249bde5c2b881c3aeb3a97af31d7))
 
 - **release**: V0.6.0 [skip ci]
+  ([`eb5ec9e`](https://github.com/vanutp/TGPy_test/commit/eb5ec9e321669749763c7b22dac96b3e8b9ab9bd))
+
+- **release**: V0.6.0 [skip ci]
   ([`0b59dcc`](https://github.com/vanutp/TGPy_test/commit/0b59dcc656ec496626b937b88dc857ce659798bb))
 
 - **release**: V0.6.0 [skip ci]
