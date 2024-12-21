@@ -47,6 +47,7 @@ jobs:
         if: steps.load-cache.outputs.cache-hit != 'true'
 
       - name: Create a release
+        id: release-version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -54,7 +55,7 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
           export GH_TOKEN="${GITHUB_TOKEN}"
-          export pyversion=$(python -m semantic_release version --no-vcs-release)
+          echo "version=$(python -m semantic_release version --no-vcs-release)" >> $GITHUB_OUTPUT
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
@@ -65,10 +66,6 @@ jobs:
       - name: Save release commit hash
         id: release-commit-hash
         run: echo "release-commit-hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Save release version
-        id: release-version
-        run: echo "version=$pyversion" >> $GITHUB_OUTPUT
 
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
