@@ -98,7 +98,7 @@ jobs:
         uses: python-semantic-release/upload-to-gh-release@v8.7.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ needs.create-release.outputs.version }}
+          tag: ${{ needs.create-release.outputs.version-tag }}
 
   # build-dev-docker:
   #   needs: lint
