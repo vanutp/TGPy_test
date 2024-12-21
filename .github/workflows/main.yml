@@ -20,7 +20,7 @@ jobs:
   create-release:
     name: Create release
     concurrency: release
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,14 +49,12 @@ jobs:
       - name: Create a release
         id: release-version
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           source .venv/bin/activate
           git config --global user.name "github-actions"
           git config --global user.email "action@github.com"
-          export GH_TOKEN="${GITHUB_TOKEN}"
-          python -m semantic_release version --no-vcs-release
-          echo "version-tag=$(python -m semantic_release version --print-tag)" >> $GITHUB_OUTPUT
+          python -m semantic_release version
 
       - name: Store the distribution packages
         uses: actions/upload-artifact@v4
@@ -71,34 +69,6 @@ jobs:
     outputs:
       release-commit-hash: ${{ steps.release-commit-hash.outputs.release-commit-hash }}
       version-tag: ${{ steps.release-version.outputs.version-tag }}
-
-  pubilsh-release:
-    name: Publish release
-    needs: create-release
-    concurrency: release
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Download all the dists
-        uses: actions/download-artifact@v4
-        with:
-          name: python-package-distributions
-          path: dist/
-
-      - name: Create a GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ needs.create-release.outputs.version-tag }}
-
-      - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/upload-to-gh-release@v8.7.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ needs.create-release.outputs.version-tag }}
 
   # build-dev-docker:
   #   needs: lint
